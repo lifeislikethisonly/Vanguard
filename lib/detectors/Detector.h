@@ -17,6 +17,7 @@ namespace vanguard {
         }
 
         virtual void startDetection() {};
+        //list of thing with base class for warning. Needs to have an operator for returning a string
         virtual void report() = 0;
     };
 }

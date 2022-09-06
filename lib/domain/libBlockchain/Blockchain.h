@@ -37,7 +37,8 @@ namespace vanguard {
         class Contract : public ObjectType {
         public:
             Contract(BlockchainModel &model, UnitFactory &factory, std::string name, std::vector<Variable *> vars/*, std::vector<BlkType *> inherits,
-            std::vector<BlkEnum *> enums, std::vector<BlkStruct *> structs, std::vector<BlkEvent *> events*/) : model(model), contractName(std::move(name)), vars(std::move(vars)), ObjectType(factory) {};
+            std::vector<BlkEnum *> enums, std::vector<BlkStruct *> structs, std::vector<BlkEvent *> events*/) : model(model), contractName(std::move(name)), vars(std::move(vars)), ObjectType(factory) {
+            };
 
             std::string name() const override {
                 return contractName;
@@ -248,6 +249,21 @@ namespace vanguard {
                 return false;
             }
 
+            std::vector<typename InsDomain::Function*> targets() const override {
+                auto contract = this->block()->function()->template contract<Blockchain<Domain>>();
+                InsDomain *universe = this->block()->function()->unit()->universe();
+                if(contract != nullptr) {
+                    auto &model = contract->blockchainModel();
+                    auto callResolver = model.callResolver();
+                    if(callResolver != nullptr) {
+                        auto tgts = callResolver->resolve(*static_cast<const vanguard::CallExpr<InsDomain> *>(this), *universe);
+                        if(!tgts.empty()) {
+                            return tgts;
+                        }
+                    }
+                }
+                return Domain::template CallExpr<InsDomain, Wrap>::targets();
+            }
         };
 
         template<typename ...Args>

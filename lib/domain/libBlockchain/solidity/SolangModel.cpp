@@ -89,27 +89,42 @@ namespace vanguard {
     }
 
     bool SolangModel::isLowLevelCall(CallExpr<Top<Blockchain<Universe>>> &call)  {
-        string name = call.target()->name();
-        return name == "call";
+        for(auto tgt : call.targets()) {
+            if(tgt->name() == "call") {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     bool SolangModel::isLowLevelStaticCall(CallExpr<Top<Blockchain<Universe>>> &call)  {
-        string name = call.target()->name();
-        return name == "callStatic";
+        for(auto tgt : call.targets()) {
+            if(tgt->name() == "callStatic") {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     bool SolangModel::isLowLevelDelegateCall(CallExpr<Top<Blockchain<Universe>>> &call)  {
-        string name = call.target()->name();
-        return name == "callDelegate";
+        for(auto tgt : call.targets()) {
+            if(tgt->name() == "callDelegate") {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     class CallTargetResolver : public InstructionClassVisitor<Top<Blockchain<Universe>>> {
     public:
         bool isCall = false;
-        const Blockchain<Universe>::Function *tgt;
+        std::vector<Top<Blockchain<Universe>>::Function *> tgts;
         void visit(const CallExpr<Top<Blockchain<Universe>>> &v) override{
             isCall = true;
-            tgt = v.target();
+            tgts = v.targets();
         }
     };
 
@@ -121,13 +136,18 @@ namespace vanguard {
             return false;
         }
 
-        string fnName = tgtResolver.tgt->name();
-
         stringstream ss;
         ss << ".*::function::" << "v?__set_.*";
 
-        std::regex reg(ss.str());
-        return regex_match(fnName, reg);
+        /*for(auto tgt : tgtResolver.tgts) {
+            string fnName = tgt->name();
+            std::regex reg(ss.str());
+            if(regex_match(fnName, reg)) {
+                return true;
+            }
+        }*/
+
+        return std::any_of(tgtResolver.tgts.begin(), tgtResolver.tgts.end(), [&ss](auto fn){std::regex reg(ss.str()); return regex_match(fn->name(), reg);});
     }
 
     bool SolangModel::readsStorage(Top<Blockchain<Universe>>::Instruction &ins) {
@@ -138,13 +158,14 @@ namespace vanguard {
             return false;
         }
 
-        string fnName = tgtResolver.tgt->name();
-
         stringstream ss;
         ss << ".*::function::" << "v?__get_.*";
 
-        std::regex reg(ss.str());
-        return regex_match(fnName, reg);
+        return std::any_of(tgtResolver.tgts.begin(), tgtResolver.tgts.end(), [&ss](auto fn){std::regex reg(ss.str()); return regex_match(fn->name(), reg);});
+    }
+
+    CallResolver<Top<Blockchain<Universe>>> *SolangModel::callResolver() {
+        return nullptr;
     }
 
     /*class TypeTrans : public BlkTypeVisitor {

@@ -58,11 +58,17 @@ namespace vanguard {
         }
 
         void visit(const CallExpr<Domain> &inst) override{
-            result = "Call to function " + inst.target()->name() + " with arguments: ";
-            auto args = inst.args();
-            for (auto arg: args){
-                result += getValueString(*arg) + ", ";
+            auto tgts = inst.targets();
+            assert(tgts.size() > 0);
+
+            for(auto tgt : tgts) {
+                result = "Call to function " + tgt->name() + " with arguments: ";
+                auto args = inst.args();
+                for (auto arg: args){
+                    result += getValueString(*arg) + ", ";
+                }
             }
+
         }
 
         void visit(const Error<Domain> &inst) override {

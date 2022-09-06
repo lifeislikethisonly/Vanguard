@@ -80,6 +80,7 @@ namespace vanguard {
             //virtual CompilationUnit* unit() const = 0;
             const llvm::Function *unwrap();
         protected:
+            virtual CompilationUnit *compilationUnit() const;
             virtual Block* head() const;
             virtual std::vector<Instruction*> insts() const;
             virtual std::vector<Block *> blks() const;

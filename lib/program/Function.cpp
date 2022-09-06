@@ -54,4 +54,7 @@ namespace vanguard{
         return function;
     }
 
+    Universe::CompilationUnit *Universe::Function::compilationUnit() const {
+        return factory.createUnit(function->getParent());
+    }
 }

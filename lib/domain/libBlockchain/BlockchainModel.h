@@ -7,6 +7,7 @@
 
 #include "program/Top.h"
 #include "Blockchain.h"
+#include "CallResolver.h"
 
 
 namespace vanguard {
@@ -20,6 +21,7 @@ namespace vanguard {
             virtual bool isLowLevelDelegateCall(CallExpr<Top<Blockchain<Universe>>> &call)  = 0;
             virtual bool writesStorage(Top<Blockchain<Universe>>::Instruction &ins) = 0;
             virtual bool readsStorage(Top<Blockchain<Universe>>::Instruction &ins) = 0;
+            virtual CallResolver<Top<Blockchain<Universe>>> *callResolver() = 0;
             //virtual bool isExternalCall(const llvm::Function &llvmFn) = 0;
             //virtual bool isDelegateCall(const llvm::Function &llvmFn) = 0;
             //virtual bool isAnyExternalCall(vanguard::Function &llvmFn) const = 0;

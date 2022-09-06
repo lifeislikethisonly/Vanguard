@@ -206,7 +206,7 @@ namespace vanguard {
         }
 
         virtual bool hasReturn() const = 0;
-        virtual typename Base::Function* target() const = 0;
+        virtual std::vector<typename Base::Function *> targets() const = 0;
         virtual std::list<Value*> args() const = 0;
 
         InstructionClassEnum instructionClass() const override {

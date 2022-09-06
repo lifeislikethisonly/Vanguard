@@ -32,6 +32,8 @@ namespace vanguard {
 
         Blockchain<Universe>::CompilationUnit *createUnit(const llvm::Module *module, const std::string& summary);
 
+        Universe::CompilationUnit *createUnit(const llvm::Module *module) override;
+
         Universe::Function *createFn(const llvm::Function *function) override;
 
         Universe::Instruction *createIns(const llvm::Instruction *instruction) override;

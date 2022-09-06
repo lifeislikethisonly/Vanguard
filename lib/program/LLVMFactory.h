@@ -17,7 +17,7 @@ namespace vanguard{
         public:
             LLVMFactory();
 
-            Universe::CompilationUnit *createUnit(const llvm::Module *module);
+            Universe::CompilationUnit *createUnit(const llvm::Module *module) override;
 
             Universe::Function *createFn(const llvm::Function *function) override;
 

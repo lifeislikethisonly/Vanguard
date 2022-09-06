@@ -248,8 +248,8 @@ namespace vanguard {
             return !wrapped->doesNotReturn();
         }
 
-        typename Base::Function* target() const override {
-            return dynamic_cast<typename Base::Function*>(this->factory.createFn(wrapped->getCalledFunction()));
+        std::vector<typename Base::Function*> targets() const override {
+            return {dynamic_cast<typename Base::Function*>(this->factory.createFn(wrapped->getCalledFunction()))};
         }
 
         std::list<Value*> args() const override{
@@ -329,4 +329,4 @@ namespace vanguard {
 }
 
 
-#endif //VANGUARD_WRAPPEDINSTRUCTIONCLASS_H
+#endif //VANGUARD_UNIVERSEINSTRUCTIONCLASSES_H

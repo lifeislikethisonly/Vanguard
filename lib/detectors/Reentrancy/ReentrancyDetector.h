@@ -21,22 +21,24 @@ namespace vanguard {
         using Instruction = typename Domain::Instruction;
 
         struct CallTargetResolver : public InstructionClassVisitor<Domain> {
-            typename Domain::Function *tgt = nullptr;
+            std::vector<typename Domain::Function *> tgts;
             void visit(const CallExpr<Domain> &v) override{
-                tgt = v.target();
+                tgts = v.targets();
             }
         };
 
         struct StateModifiedReachability : public Reachable<Domain> {
-            StateModifiedReachability(std::unordered_set<Function *>& writesStorage) : writesStorage(writesStorage) {};
+            StateModifiedReachability(std::unordered_set<Function *>& writesStorage) : storageWriteFns(writesStorage) {};
 
             bool condition(Instruction &ins) {
                 CallTargetResolver resolver;
                 ins.accept(resolver);
-                return ins.template writesStorage<Domain>() || writesStorage.find(resolver.tgt) != writesStorage.end();
+
+                return ins.template writesStorage<Domain>() || std::any_of(resolver.tgts.begin(), resolver.tgts.end(),
+                        [&](auto tgt){return storageWriteFns.find(tgt) != storageWriteFns.end();});
             }
 
-            std::unordered_set<Function *>& writesStorage;
+            std::unordered_set<Function *>& storageWriteFns;
         };
 
         void process(Function *fn) {
@@ -48,19 +50,21 @@ namespace vanguard {
                     CallTargetResolver resolver;
                     ins->accept(resolver);
 
-                    if(resolver.tgt != nullptr && processed.find(resolver.tgt) == processed.end()) {
-                        process(resolver.tgt);
-                    }
-
-                    if(ins->isAnyLowLevelCall() || writesStorage.find(resolver.tgt) != writesStorage.end()) {
-                        writesStorage.insert(fn);
-                        if(reach.reachable(*ins)) {
-                            std::cout << "vulnerable" << std::endl;
+                    for(auto tgt : resolver.tgts) {
+                        if(processed.find(tgt) == processed.end()) {
+                            process(tgt);
                         }
-                    }
 
-                    if(ins->template writesStorage<Domain>() || writesStorage.find(resolver.tgt) != writesStorage.end()) {
-                        calls.insert(fn);
+                        if(ins->isAnyLowLevelCall() || calls.find(tgt) != calls.end()) {
+                            calls.insert(fn);
+                            if(reach.reachable(*ins)) {
+                                std::cout << "vulnerable" << std::endl;
+                            }
+                        }
+
+                        if(ins->template writesStorage<Domain>() || writesStorage.find(tgt) != writesStorage.end()) {
+                            writesStorage.insert(fn);
+                        }
                     }
                 }
             }

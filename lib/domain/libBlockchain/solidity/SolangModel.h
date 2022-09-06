@@ -20,6 +20,7 @@ namespace vanguard {
         bool isLowLevelDelegateCall(CallExpr<Top<Blockchain<Universe>>> &call)  override;
         bool writesStorage(Top<Blockchain<Universe>>::Instruction &ins) override;
         bool readsStorage(Top<Blockchain<Universe>>::Instruction &ins) override;
+        CallResolver<Top<Blockchain<Universe>>> *callResolver() override;
         /*bool writesVariable(const BlkVariable &var, vanguard::Instruction &ins) const override;
         bool readsVariable(const BlkVariable &var, vanguard::Instruction &ins) const override;*/
 

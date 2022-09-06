@@ -14,12 +14,10 @@ namespace vanguard{
     }
 
     Universe::Function* Universe::CompilationUnit::findFn(std::string name) const {
-        //auto &llvmToVanguard = LLVMtoVanguard::getInstance();
-        auto function = module->getFunction(llvm::StringRef(name));
-        if (function == nullptr) {
-            return nullptr;
+        for (auto fn : this->fns()){
+            if (fn->name() == name) return fn;
         }
-        return factory.createFn(function);
+        return nullptr;
     }
 
     Value* Universe::CompilationUnit::findGlobalVariable(std::string name) {

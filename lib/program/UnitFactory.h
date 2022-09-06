@@ -14,7 +14,7 @@ namespace vanguard{
 
     class UnitFactory {
     public:
-        //virtual Universe::CompilationUnit *createUnit(const llvm::Module *module) = 0;
+        virtual Universe::CompilationUnit *createUnit(const llvm::Module *module) = 0;
 
         virtual Universe::Function *createFn(const llvm::Function *function) = 0;
 

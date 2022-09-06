@@ -71,6 +71,10 @@ namespace vanguard {
         return moduleMap[module];
     }
 
+    Universe::CompilationUnit *BlockchainFactory::createUnit(const llvm::Module *module) {
+        return moduleMap[module];
+    }
+
     Universe::Function *BlockchainFactory::createFn(const llvm::Function *fn) {
         if(fn == nullptr) {
             return nullptr;
