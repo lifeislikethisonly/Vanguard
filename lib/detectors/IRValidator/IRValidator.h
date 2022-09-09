@@ -120,7 +120,7 @@ namespace vanguard {
             }
         }
 
-        void report() override {
+        DetectorReport report() override {
             if (debug_ir_validator) {
                 std::cout << "Module Name: " << moduleName << "\n";
                 std::cout << "Source File Name: " << sourceFileName << "\n";

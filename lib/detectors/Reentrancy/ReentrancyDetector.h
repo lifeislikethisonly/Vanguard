@@ -79,7 +79,7 @@ namespace vanguard {
             }
         }
 
-        virtual void report() override {
+        virtual DetectorReport report() override {
             std::cout << "Done!" << std::endl;
         }
 

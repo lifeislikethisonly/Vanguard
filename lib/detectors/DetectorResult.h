@@ -10,8 +10,15 @@
 namespace vanguard{
     class VulLocation{
     public:
-        Universe::Function *function;
         virtual std::string string() = 0;
+    };
+
+    class VulFunctionLocation: public VulLocation{
+    public:
+        Universe::Function *function;
+        std::string string() override{
+            return function->name();
+        }
     };
 
     class DetectorResult{

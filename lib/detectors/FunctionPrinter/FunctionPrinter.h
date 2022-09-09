@@ -9,6 +9,7 @@
 #include <iostream>
 
 namespace vanguard {
+
     template<typename Domain>
     class FunctionPrinter : public FunctionDetector<Domain> {
     public:
@@ -26,7 +27,7 @@ namespace vanguard {
             std::cout << "Found Function: " << fn.name() << std::endl;
             return false;
         }
-        void report() override {
+        DetectorReport report() override {
             std::cout << "Done!" << std::endl;
         }
 

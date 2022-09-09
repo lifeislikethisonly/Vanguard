@@ -10,8 +10,26 @@
 namespace vanguard {
     class DetectorReport {
     public:
-        std::vector<vanguard::DetectorResult> detectorResults;
-        virtual std::string getReportString() = 0;
+        std::vector<vanguard::DetectorResult> *detectorResults;
+    };
+
+    class ReportFormatter{
+    public:
+        virtual std::string format(DetectorReport &report) = 0;
+    };
+
+    class JsonFormat : public ReportFormatter{
+    public:
+        std::string format(DetectorReport &report ) override{
+            return "";
+        }
+    };
+
+    class HumanReadableFormat : public ReportFormatter{
+    public:
+        std::string format(DetectorReport &report ) override{
+            return "";
+        }
     };
 }
 
