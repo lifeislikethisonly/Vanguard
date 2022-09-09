@@ -35,7 +35,7 @@ namespace vanguard {
             }
         }
 
-        DetectorReport report() override {
+        DetectorReport *report() override {
             std::cout << "Statistics:" << std::endl;
             std::cout << "# Functions: " << totFns << std::endl;
             std::cout << "# Basic Blocks: " << totBlks << std::endl;

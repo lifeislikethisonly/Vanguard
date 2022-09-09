@@ -14,15 +14,16 @@ namespace vanguard {
     public:
         FPDetectorResult(VulLocation *vulLocation, std::string vulDescription, std::string detectorName): DetectorResult(){
             this->detectorName = detectorName;
-            this->vulnerability = std::make_tuple(vulLocation, vulDescription);
+            this->vulLocation = vulLocation;
+            this->vulDescription = vulDescription;
         }
 
         VulLocation *getVulLocation() override{
-            return std::get<0>(vulnerability);
+            return vulLocation;
         }
 
         std::string getVulDescription() override{
-            return std::get<1>(vulnerability);
+            return vulDescription;
         }
 
         std::string getDetectorName() override{
@@ -63,10 +64,10 @@ namespace vanguard {
             detectorResults.push_back(fpDetectorResult);
             return false;
         }
-        DetectorReport report() override {
+        DetectorReport *report() override {
             std::cout << "Done!" << std::endl;
             FPDetectorReport *detectorReport = new FPDetectorReport(detectorResults);
-            return *detectorReport;
+            return detectorReport;
         }
 
         static Detector::DetectorDomain domain() {

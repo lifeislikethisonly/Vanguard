@@ -19,7 +19,7 @@ namespace vanguard {
 
         virtual void startDetection() {};
         //list of thing with base class for warning. Needs to have an operator for returning a string
-        virtual DetectorReport report() = 0;
+        virtual DetectorReport *report() = 0;
     };
 }
 #endif //VANGUARD_DETECTOR_H

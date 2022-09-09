@@ -23,7 +23,8 @@ namespace vanguard{
 
     class DetectorResult{
     public:
-        std::tuple<VulLocation *, std::string> vulnerability;
+        VulLocation *vulLocation;
+        std::string vulDescription;
         std::string detectorName;
 
         virtual VulLocation *getVulLocation() = 0;
