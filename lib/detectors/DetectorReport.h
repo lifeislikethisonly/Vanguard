@@ -10,7 +10,7 @@
 namespace vanguard {
     class DetectorReport {
     public:
-        std::vector<vanguard::DetectorResult> *detectorResults;
+        std::vector<vanguard::DetectorResult *> detectorResults;
     };
 
     class ReportFormatter{
