@@ -31,12 +31,14 @@
 #include "domain/libBlockchain/BlockchainFactory.h"
 #include "domain/libBlockchain/Blockchain.h"
 #include "program/Top.h"
+#include "detectors/DetectorResult.h"
+#include "detectors/DetectorReport.h"
 
 static llvm::cl::list<std::string> detectors("detectors", llvm::cl::desc("Vanguard Detectors to Run"), llvm::cl::CommaSeparated, llvm::cl::OneOrMore, llvm::cl::Optional);
 static llvm::cl::list<std::string> inputFiles(llvm::cl::Positional, llvm::cl::desc("<Input files>"), llvm::cl::OneOrMore);
 
 template<typename Domain>
-void performDetection(llvm::ModuleAnalysisManager &mam, llvm::FunctionAnalysisManager &fam, vanguard::UniverseDetector<Domain> *detector, Domain &universe) {
+vanguard::DetectorReport *performDetection(llvm::ModuleAnalysisManager &mam, llvm::FunctionAnalysisManager &fam, vanguard::UniverseDetector<Domain> *detector, Domain &universe) {
     auto requirements = detector->registerAnalyses();
     for(auto req : requirements) {
         req->fetch(mam, fam);
@@ -44,11 +46,13 @@ void performDetection(llvm::ModuleAnalysisManager &mam, llvm::FunctionAnalysisMa
 
     detector->startDetection();
     detector->detect(universe);
-    detector->report();
+    return detector->report();
 }
 
 template<typename Domain>
 void runDetectors(llvm::ModuleAnalysisManager &mam, llvm::FunctionAnalysisManager &fam, vanguard::DetectorRegistry &registry, const std::vector<std::string>& detectorNames, Domain &universe) {
+    auto humanReadableReport = new vanguard::HumanReadableFormat();
+
     for(auto name : detectorNames) {
         auto detector = registry.get<Domain>(name);
         if(detector == nullptr) {
@@ -59,7 +63,8 @@ void runDetectors(llvm::ModuleAnalysisManager &mam, llvm::FunctionAnalysisManage
     for(auto name : detectorNames) {
         auto detector = registry.get<Domain>(name);
         if(detector != nullptr) {
-            performDetection(mam, fam, detector, universe);
+            vanguard::DetectorReport *detectorReport = performDetection(mam, fam, detector, universe);
+            std::cout << humanReadableReport->format(*detectorReport);
         }
     }
 }

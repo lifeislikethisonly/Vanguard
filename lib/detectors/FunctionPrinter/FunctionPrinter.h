@@ -12,8 +12,7 @@ namespace vanguard {
 
     class FPDetectorResult: public DetectorResult{
     public:
-        FPDetectorResult(VulLocation *vulLocation, std::string vulDescription, std::string detectorName): DetectorResult(){
-            this->detectorName = detectorName;
+        FPDetectorResult(VulLocation *vulLocation, std::string vulDescription): DetectorResult(){
             this->vulLocation = vulLocation;
             this->vulDescription = vulDescription;
         }
@@ -25,16 +24,13 @@ namespace vanguard {
         std::string getVulDescription() override{
             return vulDescription;
         }
-
-        std::string getDetectorName() override{
-            return detectorName;
-        }
     };
 
     class FPDetectorReport: public DetectorReport{
     public:
-        explicit FPDetectorReport(std::vector<DetectorResult *> detectorResults): DetectorReport(){
+        explicit FPDetectorReport(std::vector<DetectorResult *> detectorResults, std::string detectorName): DetectorReport(){
             this->detectorResults = detectorResults;
+            this->detectorName = detectorName;
         }
     };
 
@@ -60,13 +56,13 @@ namespace vanguard {
             std::cout << "Found Function: " << fn.name() << std::endl;
             vulFunctionLocation->function = &fn;
             vulDescription = "This function might be vulnerable";
-            fpDetectorResult = new FPDetectorResult(vulFunctionLocation, vulDescription, this->name());
+            fpDetectorResult = new FPDetectorResult(vulFunctionLocation, vulDescription);
             detectorResults.push_back(fpDetectorResult);
             return false;
         }
         DetectorReport *report() override {
             std::cout << "Done!" << std::endl;
-            FPDetectorReport *detectorReport = new FPDetectorReport(detectorResults);
+            FPDetectorReport *detectorReport = new FPDetectorReport(detectorResults, this->name());
             return detectorReport;
         }
 

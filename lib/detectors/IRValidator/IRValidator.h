@@ -11,6 +11,31 @@
 #include "ValueTrans.h"
 
 namespace vanguard {
+
+    class IRVDetectorResult : public DetectorResult{
+    public:
+        IRVDetectorResult(VulLocation *vulLocation, std::string vulDescription): DetectorResult(){
+            this->vulLocation = vulLocation;
+            this->vulDescription = vulDescription;
+        }
+
+        VulLocation *getVulLocation() override{
+            return vulLocation;
+        }
+
+        std::string getVulDescription() override{
+            return vulDescription;
+        }
+    };
+
+    class IRVDetectorReport : public DetectorReport{
+    public:
+        explicit IRVDetectorReport(std::vector<DetectorResult *> detectorResults, std::string detectorName): DetectorReport(){
+            this->detectorResults = detectorResults;
+            this->detectorName = detectorName;
+        }
+    };
+
     template<typename Domain>
     class IRValidator : public UnitDetector<Domain> {
     public:
@@ -130,6 +155,9 @@ namespace vanguard {
                 std::cout << "# Instructions: " << totIns << "\n";
             }
             std::cout << "IR validated successfully! \n";
+            std::vector<DetectorResult *> detectorResults = {};
+            auto detectorReport = new IRVDetectorReport(detectorResults, this->name());
+            return detectorReport;
         }
 
         static std::string name() {

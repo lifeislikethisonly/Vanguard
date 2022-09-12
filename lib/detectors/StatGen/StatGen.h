@@ -10,6 +10,31 @@
 #include <iostream>
 
 namespace vanguard {
+
+    class StatGenDetectorResult : public DetectorResult{
+    public:
+        StatGenDetectorResult(VulLocation *vulLocation, std::string vulDescription): DetectorResult(){
+            this->vulLocation = vulLocation;
+            this->vulDescription = vulDescription;
+        }
+
+        VulLocation *getVulLocation() override{
+            return vulLocation;
+        }
+
+        std::string getVulDescription() override{
+            return vulDescription;
+        }
+    };
+
+    class StatGenDetectorReport : public DetectorReport{
+    public:
+        explicit StatGenDetectorReport(std::vector<DetectorResult *> detectorResults, std::string detectorName): DetectorReport(){
+            this->detectorResults = detectorResults;
+            this->detectorName = detectorName;
+        }
+    };
+
     template<typename Domain>
     class StatGen : public UnitDetector<Domain> {
     public:
@@ -40,6 +65,10 @@ namespace vanguard {
             std::cout << "# Functions: " << totFns << std::endl;
             std::cout << "# Basic Blocks: " << totBlks << std::endl;
             std::cout << "# Instructions: " << totIns << std::endl;
+
+            std::vector<DetectorResult *> detectorResults = {};
+            DetectorReport *detectorReport = new StatGenDetectorReport(detectorResults, this->name());
+            return detectorReport;
         }
 
         static std::string name() {

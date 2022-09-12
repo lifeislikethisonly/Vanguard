@@ -11,6 +11,7 @@ namespace vanguard {
     class DetectorReport {
     public:
         std::vector<vanguard::DetectorResult *> detectorResults;
+        std::string detectorName;
     };
 
     class ReportFormatter{
@@ -28,7 +29,15 @@ namespace vanguard {
     class HumanReadableFormat : public ReportFormatter{
     public:
         std::string format(DetectorReport &report ) override{
-            return "";
+            std::string output = std::string(40,'=') + "\n";
+            output += "Detector : " + report.detectorName + "\n";
+            output += std::string(40,'=') + "\n";
+            for(auto detectorResult : report.detectorResults){
+                output += "Location : " + detectorResult->vulLocation->string() + "\n";
+                output += "Description : " + detectorResult->vulDescription + "\n";
+                output += std::string(40, '-') + "\n";
+            }
+            return output;
         }
     };
 }

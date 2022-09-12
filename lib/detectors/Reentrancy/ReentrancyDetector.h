@@ -12,9 +12,36 @@
 #include <unordered_map>
 
 namespace vanguard {
+
+    class ReentrancyDetectorResult : public DetectorResult{
+    public:
+        ReentrancyDetectorResult(VulLocation *vulLocation, std::string vulDescription): DetectorResult(){
+            this->vulLocation = vulLocation;
+            this->vulDescription = vulDescription;
+        }
+
+        VulLocation *getVulLocation() override{
+            return vulLocation;
+        }
+
+        std::string getVulDescription() override{
+            return vulDescription;
+        }
+    };
+
+    class ReentrancyDetectorReport : public DetectorReport{
+    public:
+        explicit ReentrancyDetectorReport(std::vector<DetectorResult *> detectorResults, std::string detectorName): DetectorReport(){
+            this->detectorResults = detectorResults;
+            this->detectorName = detectorName;
+        }
+    };
+
     template <typename Domain>
     class ReentrancyDetector : public UniverseDetector<Domain> {
     public:
+        std::vector<DetectorResult *> detectorResults = {};
+        VulFunctionLocation *vulFunctionLocation = new VulFunctionLocation();
         using CompilationUnit = typename Domain::CompilationUnit;
         using Function = typename Domain::Function;
         using Block = typename Domain::Block;
@@ -59,6 +86,9 @@ namespace vanguard {
                             calls.insert(fn);
                             if(reach.reachable(*ins)) {
                                 std::cout << "vulnerable" << std::endl;
+                                vulFunctionLocation->function = fn;
+                                DetectorResult *detectorResult = new ReentrancyDetectorResult(vulFunctionLocation, "Function might have reentrancy in instruction "+ ins->name());
+                                detectorResults.push_back(detectorResult);
                             }
                         }
 
@@ -81,6 +111,8 @@ namespace vanguard {
 
         virtual DetectorReport *report() override {
             std::cout << "Done!" << std::endl;
+            auto *detectorReport = new ReentrancyDetectorReport(detectorResults, this->name());
+            return detectorReport;
         }
 
         static std::string name() {

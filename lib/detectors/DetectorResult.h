@@ -25,11 +25,9 @@ namespace vanguard{
     public:
         VulLocation *vulLocation;
         std::string vulDescription;
-        std::string detectorName;
 
         virtual VulLocation *getVulLocation() = 0;
         virtual std::string getVulDescription() = 0;
-        virtual std::string getDetectorName() = 0;
     };
 }
 
