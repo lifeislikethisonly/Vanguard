@@ -37,7 +37,6 @@ namespace vanguard {
     template<typename Domain>
     class FunctionPrinter : public FunctionDetector<Domain> {
     public:
-        VulFunctionLocation *vulFunctionLocation = new VulFunctionLocation();
         std::string vulDescription;
         FPDetectorResult *fpDetectorResult = nullptr;
         std::vector<DetectorResult *> detectorResults;
@@ -54,6 +53,7 @@ namespace vanguard {
         void startDetection() override {}
         bool detect(Function &fn) override {
             std::cout << "Found Function: " << fn.name() << std::endl;
+            VulFunctionLocation *vulFunctionLocation = new VulFunctionLocation();
             vulFunctionLocation->function = &fn;
             vulDescription = "This function might be vulnerable";
             fpDetectorResult = new FPDetectorResult(vulFunctionLocation, vulDescription);

@@ -33,6 +33,7 @@
 #include "program/Top.h"
 #include "detectors/DetectorResult.h"
 #include "detectors/DetectorReport.h"
+#include "domain/libBlockchain/rapidjson/document.h"
 
 static llvm::cl::list<std::string> detectors("detectors", llvm::cl::desc("Vanguard Detectors to Run"), llvm::cl::CommaSeparated, llvm::cl::OneOrMore, llvm::cl::Optional);
 static llvm::cl::list<std::string> inputFiles(llvm::cl::Positional, llvm::cl::desc("<Input files>"), llvm::cl::OneOrMore);
@@ -52,6 +53,8 @@ vanguard::DetectorReport *performDetection(llvm::ModuleAnalysisManager &mam, llv
 template<typename Domain>
 void runDetectors(llvm::ModuleAnalysisManager &mam, llvm::FunctionAnalysisManager &fam, vanguard::DetectorRegistry &registry, const std::vector<std::string>& detectorNames, Domain &universe) {
     auto humanReadableReport = new vanguard::HumanReadableFormat();
+    auto jsonReport = new vanguard::JsonFormat();
+    rapidjson::Document jsondoc;
 
     for(auto name : detectorNames) {
         auto detector = registry.get<Domain>(name);
@@ -59,14 +62,23 @@ void runDetectors(llvm::ModuleAnalysisManager &mam, llvm::FunctionAnalysisManage
             llvm::errs() << "Unknown pass: " << name << "\n";
         }
     }
-
+    std::string finalJsonString = "";
+    finalJsonString += jsonReport->preamble();
     for(auto name : detectorNames) {
         auto detector = registry.get<Domain>(name);
         if(detector != nullptr) {
             vanguard::DetectorReport *detectorReport = performDetection(mam, fam, detector, universe);
-            std::cout << humanReadableReport->format(*detectorReport);
+            //std::cout << humanReadableReport->format(*detectorReport);
+            finalJsonString += jsonReport->format(*detectorReport);
         }
     }
+    finalJsonString += jsonReport->postamble();
+    jsondoc.Parse(finalJsonString.c_str());
+    rapidjson::StringBuffer strbuf;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(strbuf);
+    jsondoc.Accept(writer);
+    std::string jsonString = strbuf.GetString();
+    std::cout << jsonString;
 }
 
 void initializeLLVM(int argc, char **argv) {

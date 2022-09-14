@@ -41,7 +41,6 @@ namespace vanguard {
     class ReentrancyDetector : public UniverseDetector<Domain> {
     public:
         std::vector<DetectorResult *> detectorResults = {};
-        VulFunctionLocation *vulFunctionLocation = new VulFunctionLocation();
         using CompilationUnit = typename Domain::CompilationUnit;
         using Function = typename Domain::Function;
         using Block = typename Domain::Block;
@@ -71,7 +70,7 @@ namespace vanguard {
         void process(Function *fn) {
             processed.insert(fn);
             StateModifiedReachability reach(writesStorage);
-
+            VulFunctionLocation *vulFunctionLocation = new VulFunctionLocation();
             for(auto blk : fn->blocks()) {
                 for(auto ins : blk->instructions()) {
                     CallTargetResolver resolver;
